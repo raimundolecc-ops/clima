@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clima Hoje</title>
+    <!-- Favicon da aba -->
+    <link rel="icon" href="https://img.icons8.com/fluency/48/cloud.png" type="image/png">
+    <link rel="stylesheet" href="estilos.css"/>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <div class="background-overlay"></div>
+    <div class="clock-container">
+    <div id="clock">00:00:00</div>
+</div>
+
+<style>
+    /* Estilização do Relógio */
+    .clock-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    #clock {
+        font-size: 5rem;
+        font-weight: bold;
+        color: #00ff88; /* Cor neon */
+        background: #1a1a1a; /* Fundo escuro */
+        padding: 20px 40px;
+        border-radius: 15px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), inset 0 0 10px rgba(0, 255, 136, 0.2);
+        letter-spacing: 5px;
+        border: 2px solid #333;
+    }
+
+    /* Ajuste para telas menores */
+    @media (max-width: 480px) {
+        #clock { font-size: 2.5rem; padding: 15px 25px; }
+    }
+</style>
+
+<script>
+    function updateClock() {
+        const now = new Date();
+        const hours = String(now.getHours()).padStart(2, '0');
+        const minutes = String(now.getMinutes()).padStart(2, '0');
+        const seconds = String(now.getSeconds()).padStart(2, '0');
+        
+        const timeString = `${hours}:${minutes}:${seconds}`;
+        document.getElementById('clock').textContent = timeString;
+    }
+
+    // Atualiza a cada segundo
+    setInterval(updateClock, 1000);
+    // Chama imediatamente para não esperar 1 segundo no início
+    updateClock();
+</script>
+
+    <main class="app-container">
+        <header>
+            <h1>
+                <img src="https://img.icons8.com/fluency/48/cloud.png" alt="Nuvem" class="title-icon"> 
+                Clima Hoje
+            </h1>
+            <div class="search-box">
+                <input type="text" id="cidade" list="sugestoes" placeholder="Busque uma cidade brasileira..." autocomplete="off">
+                <datalist id="sugestoes"></datalist>
+                
+                <button id="buscar">
+                    <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                    </svg>
+                </button>
+            </div>
+        </header>
+
+        <section id="resultado" class="weather-card">
+            <div class="current-weather">
+                <h2 id="nome-cidade">Brasil</h2>
+                <p class="temp-principal" id="display-temp">--°C</p>
+                <p class="desc-clima" id="desc-clima">Digite uma cidade para começar</p>
+            </div>
+
+            <div class="details-grid">
+                <div class="detail-item">
+                    <span>Velocidade do Vento</span>
+                    <strong id="vento">-- km/h</strong>
+                </div>
+                <div class="detail-item">
+                    <span>Sensação Térmica</span>
+                    <strong id="sensacao">--</strong>
+                </div>
+            </div>
+
+            <hr class="divider">
+            <h3 class="forecast-title">Previsão Próximos Dias</h3>
+            <div class="forecast-container" id="previsao">
+                <!-- Injetado via JS -->
+            </div>
+        </section>
+
+        
+
+    </main>
+
+    <script src="logica.js"></script>
+</body>
+</html>
