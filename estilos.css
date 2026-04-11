@@ -6,15 +6,21 @@
 }
 
 body {
+    
     height: 100vh;
     display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
     background: #1e3c72;
     background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
     color: white;
-    overflow: hidden;
+    
+
+
 }
+
+
 
 .background-overlay {
     position: fixed;
@@ -26,7 +32,8 @@ body {
 
 .app-container {
     width: 100%;
-    max-width: 420px;
+    max-width: 440px;
+    margin-top: 10%;
     padding: 20px;
     animation: fadeIn 0.8s ease-out;
 }
@@ -43,7 +50,8 @@ header h1 {
     gap: 12px;
     font-weight: 600;
     margin-bottom: 25px;
-    text-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    text-align: center;
+
 }
 
 .title-icon { width: 35px; height: 35px; }
@@ -158,3 +166,23 @@ header h1 {
 
 .dia-legenda { font-size: 10px; margin-bottom: 5px; opacity: 0.8; }
 .dia-temp { font-size: 16px; }
+
+/* Estilização do Relógio */
+    .clock-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin: 20px 0;
+    }
+
+   #clock {
+        font-size: 5rem;
+        font-weight: bold;
+        border-radius: 15px;
+        text-align: center;
+    }
+
+    /* Ajuste para telas menores */
+    @media (max-width: 480px) {
+        #clock { font-size: 2.5rem; padding: 15px 25px; }
+    };

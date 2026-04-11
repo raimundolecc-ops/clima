@@ -11,61 +11,20 @@
 </head>
 <body>
 
-    <div class="background-overlay"></div>
-    <div class="clock-container">
-    <div id="clock">00:00:00</div>
-</div>
-
-<style>
-    /* Estilização do Relógio */
-    .clock-container {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    }
-
-    #clock {
-        font-size: 5rem;
-        font-weight: bold;
-        color: #00ff88; /* Cor neon */
-        background: #1a1a1a; /* Fundo escuro */
-        padding: 20px 40px;
-        border-radius: 15px;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), inset 0 0 10px rgba(0, 255, 136, 0.2);
-        letter-spacing: 5px;
-        border: 2px solid #333;
-    }
-
-    /* Ajuste para telas menores */
-    @media (max-width: 480px) {
-        #clock { font-size: 2.5rem; padding: 15px 25px; }
-    }
-</style>
-
-<script>
-    function updateClock() {
-        const now = new Date();
-        const hours = String(now.getHours()).padStart(2, '0');
-        const minutes = String(now.getMinutes()).padStart(2, '0');
-        const seconds = String(now.getSeconds()).padStart(2, '0');
-        
-        const timeString = `${hours}:${minutes}:${seconds}`;
-        document.getElementById('clock').textContent = timeString;
-    }
-
-    // Atualiza a cada segundo
-    setInterval(updateClock, 1000);
-    // Chama imediatamente para não esperar 1 segundo no início
-    updateClock();
-</script>
+            
 
     <main class="app-container">
-        <header>
+
+        
+
+
+        <section class="">
             <h1>
                 <img src="https://img.icons8.com/fluency/48/cloud.png" alt="Nuvem" class="title-icon"> 
                 Clima Hoje
             </h1>
+            
+            
             <div class="search-box">
                 <input type="text" id="cidade" list="sugestoes" placeholder="Busque uma cidade brasileira..." autocomplete="off">
                 <datalist id="sugestoes"></datalist>
@@ -76,7 +35,18 @@
                     </svg>
                 </button>
             </div>
-        </header>
+        </section>
+
+        <section>
+            <div class="background-overlay"></div>
+        <div class="clock-container">
+        <div id="clock">00:00:00</div></div>
+        </section>
+
+        
+    
+</script>
+        
 
         <section id="resultado" class="weather-card">
             <div class="current-weather">

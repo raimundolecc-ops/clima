@@ -107,3 +107,18 @@ function atualizarTela(dados, cidadeExibicao) {
 
 btnBuscar.addEventListener('click', buscarClima);
 inputCidade.addEventListener('keypress', (e) => { if (e.key === 'Enter') buscarClima(); });
+
+function updateClock() {
+        const now = new Date();
+        const hours = String(now.getHours()).padStart(2, '0');
+        const minutes = String(now.getMinutes()).padStart(2, '0');
+        const seconds = String(now.getSeconds()).padStart(2, '0');
+        
+        const timeString = `${hours}:${minutes}:${seconds}`;
+        document.getElementById('clock').textContent = timeString;
+    }
+
+    // Atualiza a cada segundo
+    setInterval(updateClock, 1000);
+    // Chama imediatamente para não esperar 1 segundo no início
+    updateClock();
