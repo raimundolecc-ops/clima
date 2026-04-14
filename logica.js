@@ -2,123 +2,70 @@ const btnBuscar = document.getElementById('buscar');
 const inputCidade = document.getElementById('cidade');
 const dataList = document.getElementById('sugestoes');
 
+function traduzirClima(codigo) {
+    const codigos = {
+        0: "Céu Limpo", 1: "Limpo", 2: "Parcialmente Nublado", 3: "Nublado",
+        45: "Neblina", 48: "Neblina", 51: "Garoa Leve", 53: "Garoa", 55: "Garoa Densa",
+        61: "Chuva Leve", 63: "Chuva", 65: "Chuva Forte", 80: "Pancadas Chuva", 95: "Trovoada"
+    };
+    return codigos[codigo] || "Variável";
+}
 
+const cidadesBR = ["São Paulo, SP", "Rio de Janeiro, RJ", "Brasília, DF", "Salvador, BA", "Fortaleza, CE", "Belo Horizonte, MG", "Manaus, AM", "Curitiba, PR", "Recife, PE", "Porto Alegre, RS", "Palmas, TO"];
 
-// Traduções para o Português
-const traducoes = {
-    "Clear": "Céu Limpo",
-    "Partly cloudy": "Parcialmente Nublado",
-    "Cloudy": "Nublado",
-    "Rain": "Chuva",
-    "Light rain": "Chuva Leve",
-    "Sunny": "Ensolarado",
-    "Patchy rain nearby": "Chuva nas proximidades",
-    "Moderate rain": "Chuva Moderada",
-    "Heavy rain": "Chuva Forte",
-    "Overcast": "Encoberto",
-    "Mist": "Névoa",
-    "Fog": "Neblina"
-};
-
-// Lista de Sugestões (Capitais do Brasil)
-const cidadesBR = [
-    "Aracaju, SE", "Belém, PA", "Belo Horizonte, MG", "Boa Vista, RR", "Brasília, DF",
-    "Campo Grande, MS", "Cuiabá, MT", "Curitiba, PR", "Florianópolis, SC", "Fortaleza, CE",
-    "Goiânia, GO", "João Pessoa, PB", "Macapá, AP", "Maceió, AL", "Manaus, AM",
-    "Natal, RN", "Palmas, TO", "Porto Alegre, RS", "Porto Velho, RO", "Recife, PE",
-    "Rio Branco, AC", "Rio de Janeiro, RJ", "Salvador, BA", "São Luís, MA", "São Paulo, SP",
-    "Teresina, PI", "Vitória, ES"
-];
-
-// 1. Filtro de Sugestões
 inputCidade.addEventListener('input', (e) => {
     const busca = e.target.value.toLowerCase();
     dataList.innerHTML = "";
     if (busca.length >= 2) {
-        cidadesBR.filter(c => c.toLowerCase().includes(busca)).forEach(cidade => {
-            const option = document.createElement('option');
-            option.value = cidade;
-            dataList.appendChild(option);
+        cidadesBR.filter(c => c.toLowerCase().includes(busca)).forEach(c => {
+            const opt = document.createElement('option');
+            opt.value = c;
+            dataList.appendChild(opt);
         });
     }
 });
 
-// 2. Busca de Clima
 async function buscarClima() {
-    const cidadeDigitada = inputCidade.value;
-    
-    // Tratamento: remove acentos e caracteres especiais para a URL da API
-    const cidadeTratada = cidadeDigitada.split(',')[0].trim()
-        .normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-
-    if (!cidadeTratada) return;
+    const cidade = inputCidade.value.split(',')[0].trim();
+    if (!cidade) return;
 
     try {
-        document.getElementById('desc-clima').innerText = "Consultando...";
-        
-        // URL Corrigida (herokuapp)
-        const response = await fetch(`https://goweather.herokuapp.com/weather/${encodeURIComponent(cidadeTratada)}`);
-        
-        if (!response.ok) throw new Error();
+        const geoRes = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(cidade)}&count=1&language=pt&format=json`);
+        const geoData = await geoRes.json();
+        if (!geoData.results) throw new Error("Cidade não encontrada");
 
-        const dados = await response.json();
+        const { latitude, longitude, name } = geoData.results[0];
+        const climaRes = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m,apparent_temperature,weather_code,wind_speed_10m&daily=temperature_2m_max&timezone=auto`);
+        const climaData = await climaRes.json();
 
-        if (dados.temperature && dados.temperature !== "") {
-            atualizarTela(dados, cidadeDigitada.split(',')[0].trim());
-        } else {
-            document.getElementById('desc-clima').innerText = "Cidade não encontrada";
-            alert("API limitada: Tente uma capital ou cidade maior sem acentos.");
-        }
-    } catch (erro) {
-        document.getElementById('desc-clima').innerText = "Erro na conexão";
-        alert("Erro ao conectar no servidor. Tente novamente.");
-    }
-}
+        document.getElementById('nome-cidade').innerText = name;
+        document.getElementById('display-temp').innerText = `${Math.round(climaData.current.temperature_2m)}°C`;
+        document.getElementById('desc-clima').innerText = traduzirClima(climaData.current.weather_code);
+        document.getElementById('vento').innerText = `${climaData.current.wind_speed_10m} km/h`;
+        document.getElementById('sensacao').innerText = `${Math.round(climaData.current.apparent_temperature)}°C`;
 
-// 3. Atualização da Interface
-function atualizarTela(dados, cidadeExibicao) {
-    const descTraduzida = traducoes[dados.description] || dados.description;
+        const forecastDiv = document.getElementById('previsao');
+        forecastDiv.innerHTML = "";
+        const diasSemana = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"];
 
-    document.getElementById('nome-cidade').innerText = cidadeExibicao;
-    document.getElementById('display-temp').innerText = dados.temperature;
-    document.getElementById('desc-clima').innerText = descTraduzida;
-    document.getElementById('vento').innerText = dados.wind;
-    document.getElementById('sensacao').innerText = dados.temperature;
-
-    const forecastDiv = document.getElementById('previsao');
-    forecastDiv.innerHTML = "";
-
-    const legendasDias = ["Amanhã", "2 dias", "3 dias"];
-
-    if (dados.forecast) {
-        dados.forecast.forEach((dia, index) => {
-            const div = document.createElement('div');
-            div.className = 'forecast-item';
-            const diaTexto = legendasDias[index] || `Dia ${dia.day}`;
-            
-            div.innerHTML = `
-                <span class="dia-legenda">${diaTexto}</span>
-                <strong class="dia-temp">${dia.temperature}</strong>
-            `;
-            forecastDiv.appendChild(div);
+        climaData.daily.time.forEach((t, i) => {
+            if (i === 0 || i > 6) return; // Mostra 6 dias futuros para caber na tela
+            const d = new Date(t + "T00:00");
+            forecastDiv.innerHTML += `
+                <div class="forecast-item">
+                    <span class="dia-legenda">${diasSemana[d.getDay()]}</span>
+                    <strong class="dia-temp">${Math.round(climaData.daily.temperature_2m_max[i])}°</strong>
+                </div>`;
         });
-    }
+    } catch (e) { alert(e.message); }
 }
 
 btnBuscar.addEventListener('click', buscarClima);
-inputCidade.addEventListener('keypress', (e) => { if (e.key === 'Enter') buscarClima(); });
+inputCidade.addEventListener('keypress', (e) => e.key === 'Enter' && buscarClima());
 
 function updateClock() {
-        const now = new Date();
-        const hours = String(now.getHours()).padStart(2, '0');
-        const minutes = String(now.getMinutes()).padStart(2, '0');
-        const seconds = String(now.getSeconds()).padStart(2, '0');
-        
-        const timeString = `${hours}:${minutes}:${seconds}`;
-        document.getElementById('clock').textContent = timeString;
-    }
-
-    // Atualiza a cada segundo
-    setInterval(updateClock, 1000);
-    // Chama imediatamente para não esperar 1 segundo no início
-    updateClock();
+    const now = new Date();
+    document.getElementById('clock').textContent = now.toLocaleTimeString('pt-BR');
+}
+setInterval(updateClock, 1000);
+updateClock();
