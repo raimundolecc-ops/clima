@@ -32,7 +32,6 @@ body {
 
 .app-container {
     width: 95%;
-    /* No PC ele expande até 900px, no celular ocupa quase tudo */
     max-width: 900px; 
     margin: 20px auto;
     padding: 10px;
@@ -58,7 +57,9 @@ header h1 {
 
 }
 
-.title-icon { width: 35px; height: 35px; }
+.title-icon {
+     width: 35px; height: 35px;      
+    }
 
 .search-box {
     display: flex;
@@ -194,7 +195,7 @@ header h1 {
     }
 
     .temp-principal {
-        font-size: 100px; /* Temperatura ganha destaque no PC */
+        font-size: 100px; 
         margin: 0;
     }
 
@@ -204,11 +205,11 @@ header h1 {
 
     .details-grid {
         grid-template-columns: 1fr 1fr;
-        gap: 30px; /* Mais espaço entre os detalhes */
+        gap: 30px; /
     }
 }
 
-/* --- Ajuste para Celulares (Mantendo a responsividade) --- */
+
 @media (max-width: 767px) {
     .app-container { max-width: 440px; }
     #clock { font-size: 3.5rem; }
